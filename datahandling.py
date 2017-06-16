@@ -6,7 +6,6 @@ Created on 1 Jun 2017
 from peewee import IntegerField, SqliteDatabase, BooleanField, CharField, DateField, DecimalField, Model
 from playhouse.shortcuts import dict_to_model
 from datetime import datetime
-import peewee
 
 db = SqliteDatabase('beardstats.db')
 db.connect()
