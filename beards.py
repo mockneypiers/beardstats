@@ -32,6 +32,11 @@ class DataRefresher(object):
         self.db = datahandling.Persistence()
         if self.INITIALISE: self.db.initialise_db()
     
+    def refresh_expecteds_info(self):
+        expecteds = self.wgapi.request_expecteds()
+        self.db.delete_expecteds()    
+        self.db.save(datahandling.Expected, expecteds)
+    
     def refresh_tank_info(self):
         tanks = self.wgapi.request_tanks()
         self.db.delete_tanks()      

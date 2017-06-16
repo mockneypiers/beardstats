@@ -23,13 +23,15 @@ class Persistence(object):
         '''
 
     def initialise_db(self):
-        for m in globals().values():
-            if type(m) == peewee.BaseModel:
-                try:
-                    m.create_table(m)
-                except peewee.OperationalError as e:
-                    print(e)
+        Expected.create_table()
+        Player.create_table()
+        PlayerTank.create_table()
+        Tank.create_table()
                
+    def delete_expecteds(self):
+        query = Expected.delete()
+        query.execute()
+                       
     def delete_players(self):
         query = Player.delete()
         query.execute()
@@ -61,11 +63,11 @@ class Persistence(object):
             print (t.name)
 
 
-class BaseModel(Model):    
+class BaseModelDH(Model):    
     class Meta:
         database = db
         
-class Tank(BaseModel):
+class Tank(BaseModelDH):
     tank_id = IntegerField(default=0)
     name = CharField(default='')
     short_name = CharField(default='')
@@ -74,7 +76,7 @@ class Tank(BaseModel):
     nation = CharField(default='')
     is_premium = BooleanField(default='')
         
-class PlayerTank(BaseModel):
+class PlayerTank(BaseModelDH):
     tank_id = IntegerField(default=0)
     player_id = IntegerField(default=0)
     spotted = IntegerField(default=0)
@@ -100,14 +102,14 @@ class PlayerTank(BaseModel):
     dropped_capture_points = IntegerField(default=0)
     date = DateField(default=datetime.today())
 
-class Expected(BaseModel):
+class Expected(BaseModelDH):
     tank_id = IntegerField(default=0)
     expDamage = DecimalField(default=0)
     expDefence = DecimalField(default=0)
     expFrags = DecimalField(default=0)
-    expSpot = DecimalField(default=0)
+    expSpots = DecimalField(default=0)
     expWinRate = DecimalField(default=0)
 
-class Player(BaseModel):
+class Player(BaseModelDH):
     player_id = IntegerField(default=0)
     name = CharField(default='')
