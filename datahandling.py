@@ -44,7 +44,7 @@ class Persistence(object):
         query.execute()
     
     def delete_tank_stats(self):
-        query = PlayerTank.delete()
+        query = PlayerTank.delete().where(PlayerTank.date == datetime.today())
         query.execute()
     
     def delete_player_tank_stats(self, playerid):
@@ -53,8 +53,8 @@ class Persistence(object):
            
     def save(self, model, objects):
         for obj in objects:
-            db_dict = dict_to_model(model, obj)
-            db_dict.save()
+            db_model = dict_to_model(model, obj)
+            db_model.save()
                        
     def select_tanks(self):
         for t in Tank.select():

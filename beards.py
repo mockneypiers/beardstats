@@ -28,7 +28,6 @@ class DataRefresher(object):
         '''
         Constructor
         '''
-        self._players = {}
         self.wgapi = wargaming.API(server)
         self.db = datahandling.Persistence()
         if self.INITIALISE: self.db.initialise_db()
@@ -44,12 +43,12 @@ class DataRefresher(object):
         
     def add_player_tanks(self, playername):
         playertanks = self.wgapi.request_tank_stats(playername, None)
-        self.db.delete_player_tank_stats(self.wgapi._playerId)#TODO DELETE!!!!
+        self.db.delete_player_tank_stats(self.wgapi._playerId)
         print(playertanks)
         self.db.save(datahandling.PlayerTank, playertanks)
         
     def add_players_tanks(self):
-        self.db.delete_tank_stats() #TODO DELETE!!!!!!!
+        self.db.delete_tank_stats()
         for playername in self.PLAYER_LIST:
             playertanks = self.wgapi.request_tank_stats(playername, None)
             if playertanks is not None:
