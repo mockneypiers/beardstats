@@ -21,10 +21,22 @@ class API(object):
         self._playerUrl = self._API + 'account/list/'
         self._tankUrl = self._API + 'encyclopedia/vehicles/'
         self._tankStatsUrl = self._API + 'tanks/stats/'
+        self._expectedUrl = 'https://raw.githubusercontent.com/IDDT/wot-console-playerbase-analysis/master/data/processed/wn8console.json'
         self._playerId = 0
         self._playername = ''
         
-
+    def request_expecteds(self):
+        expected = []
+        values = requests.get(self._expectedUrl).json()
+        for value in values['data']:
+            valdict = {'tank_id': value['IDNum'],
+                       'expDamage': value['expDamage'],
+                       'expDefence': value['expDef'],
+                       'expFrags': value['expFrag'],
+                       'expSpots': value['expSpot'],
+                       'expWinRate': value['expWinRate']}
+            expected.append(valdict)
+        return expected
     
     def request_tanks(self):
         tankopedia = []
