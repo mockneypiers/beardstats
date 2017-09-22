@@ -3,9 +3,11 @@ Created on 1 Jun 2017
 
 @author: piers-linux
 '''
-from peewee import IntegerField, SqliteDatabase, BooleanField, CharField, DateField, DecimalField, Model
+from peewee import IntegerField, SqliteDatabase, BooleanField, CharField, DateField, DecimalField, Model,\
+    RawQuery
 from playhouse.shortcuts import dict_to_model
 from datetime import datetime
+import sqlite3
 
 db = SqliteDatabase('beardstats.db')
 db.connect()
@@ -62,6 +64,23 @@ class Persistence(object):
             print (t.name)
 
 
+class PlottableData(object):
+    
+    def __init__(self):
+        '''
+        Constructor
+        '''
+        db = sqlite3
+        
+    def select_updated_damage(self):
+        j = []
+        rq = RawQuery(PlayerTimeDamage, 'SELECT CAST(p.player_id + t.tank_id + julianday(pt.date) AS integer) AS id, p.name AS player_name, t.name AS tank_name, pt.battles, pt.damage_dealt/battles AS avgDamage, pt.date FROM Player AS p JOIN PlayerTank AS pt ON p.player_id = pt.player_id JOIN Tank AS t ON pt.tank_id = t.tank_id JOIN (SELECT player_id, tank_id, count(*) FROM PlayerTank GROUP BY player_id, tank_id, damage_dealt HAVING COUNT(*) <  3) AS d ON d.player_id = p.player_id AND d.tank_id = t.tank_id GROUP BY p.name, t.name, pt.battles, pt.damage_dealt/battles' )
+        for t in rq.execute():
+            j.append({'player_name':t.player_name, 'tank_name':t.tank_name, 'date':t.date, 'avgDamage':t.avgDamage})
+        
+        print(j)
+        
+    
 class BaseModelDH(Model):    
     class Meta:
         database = db
@@ -112,3 +131,11 @@ class Expected(BaseModelDH):
 class Player(BaseModelDH):
     player_id = IntegerField(default=0)
     name = CharField(default='')
+
+    
+class PlayerTimeDamage(BaseModelDH):
+    player_name = CharField
+    tank_name = CharField
+    battles = IntegerField
+    avgDamage = DecimalField
+    date = DateField

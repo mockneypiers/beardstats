@@ -4,6 +4,9 @@ Created on 30 May 2017
 @author: piers-linux
 '''
 import requests
+import json
+import urllib2
+from datetime import datetime
 
 
 class API(object):
@@ -21,20 +24,23 @@ class API(object):
         self._playerUrl = self._API + 'account/list/'
         self._tankUrl = self._API + 'encyclopedia/vehicles/'
         self._tankStatsUrl = self._API + 'tanks/stats/'
-        self._expectedUrl = 'https://raw.githubusercontent.com/IDDT/wot-console-playerbase-analysis/master/data/processed/wn8console.json'
+        self._expectedUrl = 'https://raw.githubusercontent.com/IDDT/wot-console-wn8/master/results/wn8console.json'
         self._playerId = 0
         self._playername = ''
         
     def request_expecteds(self):
         expected = []
-        values = requests.get(self._expectedUrl).json()
-        for value in values['data']:
-            valdict = {'tank_id': value['IDNum'],
-                       'expDamage': value['expDamage'],
-                       'expDefence': value['expDef'],
-                       'expFrags': value['expFrag'],
-                       'expSpots': value['expSpot'],
-                       'expWinRate': value['expWinRate']}
+        req = urllib2.Request(self._expectedUrl)
+        opener = urllib2.build_opener()
+        f = opener.open(req)
+        expecteds = json.loads(f.read())
+        for value in expecteds:
+            valdict = {'tank_id': value,
+                       'expDamage': expecteds[value]['expDamage'],
+                       'expDefence': expecteds[value]['expDef'],
+                       'expFrags': expecteds[value]['expFrag'],
+                       'expSpots': expecteds[value]['expSpot'],
+                       'expWinRate': expecteds[value]['expWinRate']}
             expected.append(valdict)
         return expected
     
@@ -99,7 +105,8 @@ class API(object):
                              'direct_hits_received': stat['all']['direct_hits_received'],
                              'frags': stat['all']['frags'],
                              'survived_battles': stat['all']['survived_battles'],
-                             'dropped_capture_points': stat['all']['dropped_capture_points']
+                             'dropped_capture_points': stat['all']['dropped_capture_points'],
+                             'date': datetime.today()
                              }
             playerTankStats.append(TankStatsDict)
          
