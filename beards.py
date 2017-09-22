@@ -19,7 +19,10 @@ class DataRefresher(object):
                    'GoldenCodpiece',
                    'LukeNukem-79',
                    'radinko245',
-                   'Damon_Grille'}
+                   'Damon_Grille',
+                   'IVO-GT',
+                   'Devils_no1_Demon',
+                   'choppermeir'}
     
     INITIALISE = False
 
@@ -30,6 +33,7 @@ class DataRefresher(object):
         '''
         self.wgapi = wargaming.API(server)
         self.db = datahandling.Persistence()
+        self.lists = datahandling.PlottableData()
         if self.INITIALISE: self.db.initialise_db()
     
     def refresh_expecteds_info(self):
@@ -67,3 +71,6 @@ class DataRefresher(object):
             players.append(self.wgapi.get_player(playername))
             
         self.db.save(datahandling.Player, players)
+    
+    def display_tanks(self):
+        self.lists.select_updated_damage()
